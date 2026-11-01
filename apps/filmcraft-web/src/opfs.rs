@@ -108,10 +108,19 @@ pub fn write_then(rel: String, data: Vec<u8>, done: Option<Done>) {
 
 /// Read a file (None when missing).
 pub async fn read(rel: &str) -> Option<Vec<u8>> {
+    read_limited(rel, 256 * 1024 * 1024).await
+}
+
+/// Bound allocations before reading a potentially corrupt local recovery file.
+pub async fn read_limited(rel: &str, max_bytes: usize) -> Option<Vec<u8>> {
     let fh = file_handle(rel, false).await.ok()?;
     let file: web_sys::File = JsFuture::from(fh.get_file()).await.ok()?.dyn_into().ok()?;
+    if file.size() > max_bytes as f64 {
+        return None;
+    }
     let buf = JsFuture::from(file.array_buffer()).await.ok()?;
-    Some(js_sys::Uint8Array::new(&buf).to_vec())
+    let bytes = js_sys::Uint8Array::new(&buf);
+    (bytes.length() as usize <= max_bytes).then(|| bytes.to_vec())
 }
 
 /// Remove a file (ignored when missing).

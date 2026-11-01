@@ -154,6 +154,7 @@ pub fn install() -> Result<(), JsValue> {
             let mut v = crate::info();
             v["webcodecsStats"] = crate::webcodecs::stats();
             v["fetchesInFlight"] = json!(crate::fs::inflight());
+            v["recovery"] = crate::recovery::status();
             to_js(&v)
         })
         .into_js_value(),
@@ -209,6 +210,45 @@ pub fn install() -> Result<(), JsValue> {
                 };
                 crate::import::open_project_file(file).await.map(|v| to_js(&v)).map_err(|e| JsValue::from(js_sys::Error::new(&e)))
             }))
+        })
+        .into_js_value(),
+    )?;
+    set_fn(
+        &obj,
+        "flushRecovery",
+        Closure::<dyn Fn() -> js_sys::Promise>::new(|| {
+            // Save adoption is checked in a posted action; do not acknowledge an empty queue
+            // before that action has run.
+            let barrier = js_sys::Promise::new(&mut |resolve, _reject| {
+                crate::post(move |_, _| {
+                    let _ = resolve.call0(&JsValue::NULL);
+                });
+            });
+            future_to_promise(async move {
+                JsFuture::from(barrier).await?;
+                crate::recovery::flush().await.map(|v| to_js(&v)).map_err(|e| js_sys::Error::new(&e).into())
+            })
+        })
+        .into_js_value(),
+    )?;
+    set_fn(
+        &obj,
+        "checkpointProject",
+        Closure::<dyn Fn() -> js_sys::Promise>::new(|| {
+            let queued = js_sys::Promise::new(&mut |resolve, reject| {
+                crate::post(move |w, _| match crate::recovery::checkpoint(&w.app.session) {
+                    Ok(()) => {
+                        let _ = resolve.call0(&JsValue::NULL);
+                    }
+                    Err(e) => {
+                        let _ = reject.call1(&JsValue::NULL, &js_sys::Error::new(&e));
+                    }
+                });
+            });
+            future_to_promise(async move {
+                JsFuture::from(queued).await?;
+                crate::recovery::flush().await.map(|v| to_js(&v)).map_err(|e| js_sys::Error::new(&e).into())
+            })
         })
         .into_js_value(),
     )?;

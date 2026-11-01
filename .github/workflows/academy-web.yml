@@ -64,6 +64,9 @@ jobs:
           cargo xtask web
           mkdir -p dist/web
           cp -a "$CARGO_TARGET_DIR/web/dist/." dist/web/
+      - name: Focused browser recovery and download-policy regressions
+        shell: bash
+        run: cargo test --locked -p filmcraft-web --test it
       - name: Include licenses and exact source identity
         shell: bash
         run: |

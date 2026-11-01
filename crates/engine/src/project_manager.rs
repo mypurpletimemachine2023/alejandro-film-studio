@@ -370,7 +370,15 @@ pub fn commands() -> Vec<CommandSpec> {
         menu: &["File"],
         shortcut: None,
         params: r#"{"destination":str,"mode":"collect|consolidate","sequences":[id]?,"excludeUnused":bool=true,"handles":frames=30,"preset":"prores_lt|prores_hq|h264|…","includeProxies":bool,"includePreviews":bool=false,"projectName":str?,"dryRun":bool=false,"overwrite":bool=false,"wait":bool=false}"#,
-        enabled: |s| if s.project.sequences().next().is_some() { Ok(()) } else { Err("the project has no sequences".into()) },
+        enabled: |s| {
+            if cfg!(target_arch = "wasm32") {
+                Err("Project Manager collection requires desktop filesystem access. Save the native project and keep its original media files together.".into())
+            } else if s.project.sequences().next().is_some() {
+                Ok(())
+            } else {
+                Err("the project has no sequences".into())
+            }
+        },
         run,
         journal: false,
     }]

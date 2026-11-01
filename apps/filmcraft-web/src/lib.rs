@@ -26,6 +26,7 @@ pub mod import;
 pub mod opfs;
 pub mod recovery;
 pub mod recovery_policy;
+pub mod recovery_record;
 pub mod webcodecs;
 
 use std::cell::RefCell;
@@ -166,6 +167,18 @@ pub async fn start(canvas_id: String) -> Result<(), JsValue> {
                 let ctx = cc.egui_ctx.clone();
                 fs::set_on_data(move || ctx.request_repaint());
                 fs::set_on_write(|path, data| {
+                    // File writes alone do not identify a Save: export/copy also writes .fcproj.
+                    // Check adoption on the next logic pass, after the command has finished.
+                    if path.to_ascii_lowercase().ends_with(".fcproj") {
+                        let (path, data) = (path.to_string(), data.to_vec());
+                        post(move |w, _| {
+                            if w.app.session.path.as_deref() == Some(path.as_str())
+                                && let Err(e) = recovery::keep_saved(&data)
+                            {
+                                w.app.status(format!("Recovery backup unavailable: {e}. Keep the downloaded project."));
+                            }
+                        });
+                    }
                     if let Err(e) = fs::download(path, data) {
                         log::warn!("download {path}: {e:?}");
                     }
@@ -173,14 +186,15 @@ pub async fn start(canvas_id: String) -> Result<(), JsValue> {
                 webcodecs::install();
                 let mut session = Session::new(Arc::new(fs::WebServices));
                 let mut toast = None;
-                if let Some((name, bytes)) = recovered {
+                if let Some((name, bytes, dirty)) = recovered {
                     let path = format!("/recovered/{name}");
                     fs::put(&path, bytes);
                     match session.execute("file.open", json!({"path": path})) {
                         Ok(_) => {
-                            // the recovered changes are unsaved
-                            session.saved_revision = 0;
-                            toast = Some(format!("Recovered unsaved changes to {name}"));
+                            if dirty {
+                                session.saved_revision = 0;
+                            }
+                            toast = Some(if dirty { format!("Recovered unsaved changes to {name}") } else { format!("Restored saved project {name}") });
                         }
                         Err(e) => log::warn!("recovery failed: {e}"),
                     }

@@ -6,6 +6,11 @@ edition.workspace = true
 license.workspace = true
 publish = false
 
+[dev-dependencies]
+filmcraft-format = { workspace = true }
+filmcraft-project = { workspace = true }
+serde_json = { workspace = true }
+
 [lints]
 workspace = true
 
