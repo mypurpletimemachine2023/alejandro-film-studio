@@ -27,7 +27,7 @@ jobs:
           git diff --exit-code "$base" -- LICENSE-MIT LICENSE-APACHE NOTICE
           git diff --check "$base"
           test -f ACA_FORK.md
-          if find docs/brand -type f \( -name '*.png' -o -name '*.svg' \) | grep -q .; then
+          if find docs/brand -type f | grep -Eq '[.](png|svg)$'; then
             echo 'Non-open upstream trademark artwork must not be bundled in the fork.' >&2
             exit 1
           fi
