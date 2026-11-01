@@ -1,3 +1,4 @@
+//! ACA derivative: purple surfaces and gold controls; semantic meter/error colors retained.
 //! Design tokens. Every widget reads colours/sizes from [`Tokens`] so themes apply everywhere.
 //!
 //! The default theme follows the look of Premiere Pro's current dark UI (values measured from
@@ -154,28 +155,28 @@ impl Tokens {
         // Measured from Premiere 26 "Darkest" (plan/premiere/02-ui-ux.md §1).
         let dark = Tokens {
             kind,
-            app_bg: Color32::from_rgb(0, 0, 0),
-            header_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            panel_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            tab_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            tab_text: Color32::from_rgb(0xb0, 0xb0, 0xb0),
-            tab_text_active: Color32::from_rgb(0xd1, 0xd1, 0xd1),
-            focus: Color32::from_rgb(0x57, 0x94, 0xec),
-            accent: Color32::from_rgb(0x2f, 0x6b, 0xdf),
-            accent_hover: Color32::from_rgb(0x3f, 0x7c, 0xe8),
-            text: Color32::from_rgb(0xd1, 0xd1, 0xd1),
-            text_dim: Color32::from_rgb(0xb0, 0xb0, 0xb0),
+            app_bg: Color32::from_rgb(22, 15, 36),
+            header_bg: Color32::from_rgb(27, 16, 44),
+            panel_bg: Color32::from_rgb(36, 25, 52),
+            tab_bg: Color32::from_rgb(31, 20, 47),
+            tab_text: Color32::from_rgb(190, 174, 205),
+            tab_text_active: Color32::from_rgb(255, 230, 174),
+            focus: Color32::from_rgb(217, 181, 103),
+            accent: Color32::from_rgb(217, 181, 103),
+            accent_hover: Color32::from_rgb(239, 206, 130),
+            text: Color32::from_rgb(243, 233, 217),
+            text_dim: Color32::from_rgb(190, 174, 205),
             text_faint: Color32::from_rgb(0x6e, 0x6e, 0x6e),
             icon: Color32::from_rgb(0xb0, 0xb0, 0xb0),
-            icon_active: Color32::from_rgb(0xd1, 0xd1, 0xd1),
-            hover: Color32::from_rgb(0x2c, 0x2c, 0x2c),
-            pressed: Color32::from_rgb(0x4b, 0x4b, 0x4b),
-            field_bg: Color32::from_rgb(0x0e, 0x0e, 0x0e),
-            field_border: Color32::from_rgb(0x30, 0x30, 0x30),
-            separator: Color32::from_rgb(0x30, 0x30, 0x30),
-            row_alt: Color32::from_rgb(0x21, 0x21, 0x21),
-            row_selected: Color32::from_rgb(0x33, 0x33, 0x33),
-            hot_text: Color32::from_rgb(0x40, 0x96, 0xf3),
+            icon_active: Color32::from_rgb(255, 230, 174),
+            hover: Color32::from_rgb(62, 39, 87),
+            pressed: Color32::from_rgb(80, 49, 109),
+            field_bg: Color32::from_rgb(24, 16, 36),
+            field_border: Color32::from_rgb(89, 62, 113),
+            separator: Color32::from_rgb(67, 45, 90),
+            row_alt: Color32::from_rgb(40, 28, 57),
+            row_selected: Color32::from_rgb(79, 51, 108),
+            hot_text: Color32::from_rgb(217, 181, 103),
             pill_active_bg: Color32::from_rgb(0x3a, 0x3a, 0x3a),
             clip_bar_bg: Color32::from_rgb(58, 58, 70),
             control_surface: Color32::from_rgb(0x24, 0x24, 0x24),
@@ -219,22 +220,22 @@ impl Tokens {
             scroll_thumb_hover: Color32::from_gray(0x6a),
             vertical_scroll_thumb: Color32::from_gray(80),
             disabled_clip_bg: Color32::from_gray(0x2a),
-            tl_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            tl_track_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            tl_track_bg_alt: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            tl_header_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            tl_ruler_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
+            tl_bg: Color32::from_rgb(27, 18, 41),
+            tl_track_bg: Color32::from_rgb(36, 25, 52),
+            tl_track_bg_alt: Color32::from_rgb(40, 28, 57),
+            tl_header_bg: Color32::from_rgb(31, 20, 47),
+            tl_ruler_bg: Color32::from_rgb(31, 20, 47),
             tl_ruler_tick: Color32::from_rgb(0x8d, 0x8d, 0x8d),
             tl_ruler_text: Color32::from_rgb(0xb0, 0xb0, 0xb0),
-            playhead: Color32::from_rgb(0x58, 0x95, 0xec),
+            playhead: Color32::from_rgb(217, 181, 103),
             track_target: Color32::from_rgb(0x26, 0x5b, 0xc1),
             in_out_shade: Color32::from_rgb(0x3f, 0x3f, 0x3f),
-            clip_selected_border: Color32::from_rgb(0xeb, 0xeb, 0xeb),
+            clip_selected_border: Color32::from_rgb(217, 181, 103),
             render_red: Color32::from_rgb(0xe3, 0x48, 0x50),
             render_yellow: Color32::from_rgb(0xf0, 0xf0, 0x4f),
             render_green: Color32::from_rgb(0x2d, 0x9d, 0x78),
             monitor_bg: Color32::from_rgb(0x1d, 0x1d, 0x1d),
-            timecode: Color32::from_rgb(0x40, 0x96, 0xf3),
+            timecode: Color32::from_rgb(217, 181, 103),
             danger: Color32::from_rgb(0xdc, 0x51, 0x3d),
             radius: 0.0,
             radius_sm: 4.0,
@@ -469,7 +470,7 @@ pub fn apply_visuals(ctx: &egui::Context, t: &Tokens) {
     v.faint_bg_color = t.row_alt;
     v.override_text_color = Some(t.text);
     v.selection.bg_fill = t.accent;
-    v.selection.stroke = Stroke::new(1.0, Color32::WHITE);
+    v.selection.stroke = Stroke::new(1.0, if t.accent == Color32::from_rgb(217, 181, 103) { Color32::from_rgb(24, 14, 42) } else { Color32::WHITE });
     v.hyperlink_color = t.accent;
     v.window_stroke = Stroke::new(1.0, t.field_border);
     v.window_corner_radius = egui::CornerRadius::same(6);

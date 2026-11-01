@@ -1,9 +1,12 @@
+# ACA Film Studio — ALEJANDRO Creative Academy
+
+Independent purple-and-gold browser source edition. See [ACA_FORK.md](ACA_FORK.md) for provenance, build instructions and current verification. The engine and native document formats remain upstream-compatible. Browser build verification is separate.
+
+## Preserved upstream documentation
+
 <p align="center">
-  <a href="https://getartcraft.com/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="docs/brand/artcraft-logo-white.svg">
-      <img alt="ArtCraft" src="docs/brand/artcraft-logo.svg" width="200">
-    </picture>
+  <a href="https://alejandrocreativeacademy.com/">
+    <strong>ALEJANDRO Creative Academy</strong>
   </a>
 </p>
 
@@ -472,7 +475,7 @@ Forks and modified versions must remove them.
 <br>
 
 <p align="center">
-  <a href="https://getartcraft.com/"><img alt="ArtCraft" src="docs/brand/artcraft-mark.svg" width="28"></a><br>
+  <a href="https://getartcraft.com/"></a><br>
   <sub>Made by the <a href="https://getartcraft.com/">ArtCraft</a> team and community.</sub>
 </p>
 

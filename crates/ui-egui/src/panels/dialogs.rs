@@ -36,8 +36,8 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
     let mut open = true;
     match d {
         Dialog::About => {
-            egui::Window::new(tl!("About FilmCraft"))
-                .id(egui::Id::unique("About FilmCraft"))
+            egui::Window::new(tl!("About ACA Film Studio"))
+                .id(egui::Id::unique("About ACA Film Studio"))
                 .open(&mut open)
                 .collapsible(false)
                 .resizable(false)
@@ -418,7 +418,7 @@ fn delete_tracks(app: &mut FilmcraftApp, ctx: &egui::Context) -> bool {
     keep
 }
 
-/// Help ▸ About FilmCraft, in three tabs: About (version and the ArtCraft community links),
+/// Help ▸ About ACA Film Studio, in three tabs: About (version and the ArtCraft community links),
 /// Contributors and Models (the credits compiled in from `contributors/contributors.json`, see
 /// `crate::credits` and docs/contributors.md).
 ///
@@ -467,9 +467,11 @@ fn about_tab(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
     let (r, _) = ui.allocate_exact_size(egui::vec2(ui.available_width(), 30.0), egui::Sense::hover());
     crate::brand::paint_wordmark(ui, egui::pos2(r.min.x, r.center().y), 20.0, app.ui.dark);
     ui.add_space(6.0);
-    ui.heading("FilmCraft");
+    ui.heading("ACA Film Studio");
     ui.label(tlf!("Version {version}", version = env!("CARGO_PKG_VERSION")));
-    ui.label(tl!("A clean-room, pure-Rust non-linear video editor. Part of the ArtCraft family."));
+    ui.label("ALEJANDRO Creative Academy — independent edition");
+    ui.label("Based on FilmCraft by the ArtCraft team and contributors. Non-linear editing in pure Rust.");
+    ui.hyperlink_to("Alejandro Creative Academy", "https://alejandrocreativeacademy.com");
     ui.add_space(10.0);
     let mut link = |ui: &mut egui::Ui, id: &str, icon: Icon, label: &str, url: &str, primary: bool| {
         let size = egui::vec2(ui.available_width(), if primary { 36.0 } else { 28.0 });

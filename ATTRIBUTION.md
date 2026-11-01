@@ -149,14 +149,6 @@ remove them (AGENTS.md §1.8).
 
 | File | Author | Source | Licence |
 |---|---|---|---|
-| `docs/brand/artcraft-logo-white.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark, light ink for dark backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-logo-white.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark, light ink for dark backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-logo.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark (symbol + "ARTCRAFT"), dark ink for light backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-logo.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft wordmark (symbol + "ARTCRAFT"), dark ink for light backgrounds) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark-black.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), black) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark-black.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), black) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark.png` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), blue) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
-| `docs/brand/artcraft-mark.svg` | ArtCraft Team | Original work: first-party ArtCraft brand mark (ArtCraft symbol ("A" mark), blue) | ArtCraft trademark, not open source; `docs/brand/LICENSE-brand.txt` (not MIT/Apache) |
 
 ## Third-party source code
 
@@ -186,3 +178,7 @@ SHA-256 (`crates/speech/src/models.rs`, `docs/transcripts.md`).
 | `epaint_default_fonts::UBUNTU_LIGHT` (dependency font input) | Canonical Ltd. | [egui 6d518fc7](https://github.com/storytold/egui/tree/6d518fc799681571963842f95b55a6b68431b15a/crates/epaint_default_fonts/fonts) | Ubuntu Font Licence 1.0 (Copyright 2011 Canonical Ltd.; full upstream text in `NOTICE`) | Ubuntu-Light.ttf is egui's default proportional fallback, included by `default_fonts`; `system_fonts` is not enabled. Dependency asset unmodified here; no font file copied into this repository. |
 | `epaint_default_fonts::NOTO_EMOJI_REGULAR` (dependency font input) | The Noto Project Authors (Google) | [egui 6d518fc7](https://github.com/storytold/egui/tree/6d518fc799681571963842f95b55a6b68431b15a/crates/epaint_default_fonts/fonts), [Noto Emoji](https://fonts.google.com/noto/specimen/Noto+Emoji) | OFL-1.1 (Copyright 2013 Google Inc.; full upstream text in `NOTICE`) | NotoEmoji-Regular.ttf is the monochrome emoji fallback, included because the workspace enables `monochrome_emoji_fonts`. Dependency asset unmodified here; no font file copied into this repository. |
 | `epaint_default_fonts::HACK_REGULAR` (dependency font input) | Source Foundry Authors; Bitstream Inc.; DejaVu contributors | [egui 6d518fc7](https://github.com/storytold/egui/tree/6d518fc799681571963842f95b55a6b68431b15a/crates/epaint_default_fonts/fonts), [Hack](https://github.com/source-foundry/Hack) | MIT (Copyright (c) 2018 Source Foundry Authors) and the Bitstream Vera License (Copyright (c) 2003 Bitstream, Inc.); the DejaVu work is public domain; full upstream notices in `NOTICE` | Hack-Regular.ttf is egui's default monospace fallback, included by `default_fonts`. Dependency asset unmodified here; no font file copied into this repository. |
+
+ACA derivative: the ArtCraft trademark artwork under docs/brand has been excluded. ACA marks are original text/geometry drawn in code; copyright and other dependency notices are retained.
+
+| `apps/filmcraft-web/web/index.html` inline ACA favicon | ACA fork contributors | Original procedural SVG geometry and system type | MIT OR Apache-2.0 |
