@@ -1,4 +1,4 @@
-//! Narrow Academy appearance queue: presentation only, never an editor command.
+//! Narrow Academy appearance queue: native appearance preferences, never artwork commands.
 use std::cell::Cell;
 #[cfg(target_arch = "wasm32")]
 use std::cell::RefCell;
@@ -36,11 +36,11 @@ pub fn academy_theme_state() -> bool {
 }
 pub(crate) fn take() -> Option<bool> {
     READY.with(|r| r.set(true));
-    let next = PENDING.with(Cell::take);
-    if let Some(light) = next {
-        CURRENT.with(|c| c.set(light));
-    }
-    next
+    PENDING.with(Cell::take)
+}
+/// Acknowledge actual native tokens after preference and app logic have completed.
+pub(crate) fn applied(light: bool) {
+    CURRENT.with(|current| current.set(light));
 }
 
 #[cfg(test)]
@@ -53,6 +53,7 @@ mod tests {
         academy_theme(true);
         assert_eq!(take(), Some(true));
         assert_eq!(take(), None);
+        applied(true);
         assert!(academy_theme_state());
         assert!(academy_ready());
     }
@@ -63,8 +64,28 @@ mod tests {
         assert!(academy_ready());
         academy_theme(true);
         assert_eq!(take(), Some(true));
+        applied(true);
+        assert!(academy_theme_state());
         academy_theme(false);
         assert_eq!(take(), Some(false));
+        applied(false);
+        assert!(!academy_theme_state());
+    }
+    #[test]
+    fn requested_or_drained_intent_is_not_an_applied_palette() {
+        assert!(!academy_theme_state());
+        academy_theme(true);
+        assert!(!academy_theme_state());
+        assert_eq!(take(), Some(true));
+        assert!(!academy_theme_state());
+        applied(false);
+        assert!(!academy_theme_state());
+        applied(true);
+        assert!(academy_theme_state());
+        academy_theme(false);
+        assert_eq!(take(), Some(false));
+        assert!(academy_theme_state());
+        applied(false);
         assert!(!academy_theme_state());
     }
 }

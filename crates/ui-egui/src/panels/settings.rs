@@ -1043,6 +1043,46 @@ mod tests {
         assert_eq!(app.session.prefs.appearance.dark_theme, "darkest");
     }
 
+    #[test]
+    fn academy_host_theme_survives_preference_sync_without_touching_project() {
+        for dirty in [false, true] {
+            let ctx = egui::Context::default();
+            let mut app = FilmcraftApp::new(filmcraft_engine::Session::default());
+            if dirty {
+                app.session.execute("file.newSequence", json!({"name": "Keep this timeline"})).unwrap();
+            }
+            app.session.execute("prefs.set", json!({"key": "appearance.appearanceMode", "value": "dark"})).unwrap();
+            app.apply_prefs(&ctx);
+            assert_eq!(app.session.is_dirty(), dirty);
+            assert_eq!(app.tokens.kind, ThemeKind::Dark);
+            let project = serde_json::to_value(&app.session.project).unwrap();
+            let revisions = (app.session.revision, app.session.saved_revision, app.session.is_dirty());
+            let path = app.session.path.clone();
+
+            // Reproduce the former transient host choice losing to conflicting preferences.
+            app.set_theme(&ctx, ThemeKind::Light);
+            app.logic_inner(&ctx);
+            app.apply_prefs(&ctx);
+            assert_eq!(app.tokens.kind, ThemeKind::Dark);
+
+            for kind in [ThemeKind::Light, ThemeKind::Dark, ThemeKind::Light, ThemeKind::Dark] {
+                // The Academy host uses this same native View/Appearance preference helper.
+                set_theme(&mut app, &ctx, kind);
+                for _ in 0..3 {
+                    app.logic_inner(&ctx);
+                    app.apply_prefs(&ctx);
+                }
+                assert_eq!(app.tokens.kind, kind);
+                assert_eq!(app.ui.dark, kind != ThemeKind::Light);
+                assert_eq!(ctx.theme(), if kind == ThemeKind::Light { egui::Theme::Light } else { egui::Theme::Dark });
+                assert_eq!(app.tokens.panel_bg, Tokens::for_kind(kind).panel_bg);
+                assert_eq!(serde_json::to_value(&app.session.project).unwrap(), project);
+                assert_eq!((app.session.revision, app.session.saved_revision, app.session.is_dirty()), revisions);
+                assert_eq!(app.session.path, path);
+            }
+        }
+    }
+
     /// Auto follows the host's reading of the system appearance as it changes, and falls back to
     /// dark without an answer.
     #[test]

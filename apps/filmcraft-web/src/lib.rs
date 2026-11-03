@@ -99,13 +99,19 @@ impl eframe::App for WebApp {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         crate::academy::attach(ctx);
         if let Some(light) = crate::academy::take() {
-            self.app.set_theme(ctx, if light { filmcraft_ui_egui::theme::ThemeKind::Light } else { filmcraft_ui_egui::theme::ThemeKind::Dark });
+            // The low-level visual setter alone is overwritten by preference synchronization.
+            filmcraft_ui_egui::panels::settings::set_theme(
+                &mut self.app,
+                ctx,
+                if light { filmcraft_ui_egui::theme::ThemeKind::Light } else { filmcraft_ui_egui::theme::ThemeKind::Dark },
+            );
         }
         let actions = ACTIONS.with(|a| std::mem::take(&mut *a.borrow_mut()));
         for f in actions {
             f(self, ctx);
         }
         self.app.logic_inner(ctx);
+        crate::academy::applied(self.app.tokens.kind == filmcraft_ui_egui::theme::ThemeKind::Light);
         api::poll_replies();
         // exports advance between frames (no threads)
         if self.app.session.pump_jobs(std::time::Duration::from_millis(30)) {
