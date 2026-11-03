@@ -8,6 +8,15 @@ use egui::{Rect, UiBuilder, vec2};
 use serde_json::json;
 
 impl FilmcraftApp {
+    pub(crate) fn mobile_sync_context(&mut self) {
+        let context = (self.session.document_epoch, self.session.state.active_sequence.map(|id| id.0));
+        if self.mobile.context != Some(context) {
+            self.mobile.context = Some(context);
+            self.mobile.timeline = None;
+            self.mobile_checkpoint = None;
+        }
+    }
+
     pub(crate) fn mobile_store_layout(&mut self) {
         // Browser persistence is owned by the web host, separately from recovery and projects.
         #[cfg(not(target_arch = "wasm32"))]

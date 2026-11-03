@@ -41,6 +41,7 @@ pub struct Runtime {
     pub bounds: Rect,
     pub touch: TouchRouter,
     pub buttons: Vec<(String, Rect)>,
+    pub context: Option<(u64, Option<u64>)>,
 }
 
 impl Default for Runtime {
@@ -55,6 +56,7 @@ impl Default for Runtime {
             bounds: Rect::NOTHING,
             touch: TouchRouter::default(),
             buttons: Vec::new(),
+            context: None,
         }
     }
 }
@@ -94,6 +96,7 @@ impl Runtime {
 
 impl NativeApp {
     pub(crate) fn mobile_update(&mut self, ui: &egui::Ui) {
+        self.mobile_sync_context();
         let rect = ui.max_rect();
         self.mobile.viewport = rect;
         let gesture = ui.input(|i| i.pointer.any_down()) || self.mobile.touch.active();
