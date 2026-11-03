@@ -196,7 +196,7 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect, which: Which)
     let stacked_controls = rect.width() < 540.0;
     let separate_source_drag = which == Which::Source && stacked_controls && rect.width() < 310.0;
     let source_drag_h = if separate_source_drag { 26.0 } else { 0.0 };
-    let controls_h = 28.0 + 24.0 + 15.0 + 36.0 + if stacked_controls { 26.0 } else { 0.0 } + source_drag_h;
+    let controls_h = if app.mobile.policy.compact { 44.0 } else { 28.0 + 24.0 + 15.0 + 36.0 + if stacked_controls { 26.0 } else { 0.0 } + source_drag_h };
     let video_area = Rect::from_min_max(rect.min + vec2(4.0, 4.0), pos2(rect.max.x - 4.0, rect.max.y - controls_h));
     // the Source monitor's time ruler starts at `origin` (a subclip restricted to its range)
     let mut origin = Tick::ZERO;
@@ -385,6 +385,14 @@ pub fn show(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect, which: Which)
         app.ui.status = name.clone();
     }
 
+    if app.mobile.policy.compact {
+        // Playback is pinned in the compact header. Keep the Program picture visible even in
+        // short landscape and retain a full-width, finger-sized seek bar below it.
+        let bar = Rect::from_min_max(pos2(rect.min.x + 6.0, rect.max.y - 44.0), pos2(rect.max.x - 6.0, rect.max.y));
+        follow_playhead(app, which, origin, duration, time);
+        mini_timeline(app, ui, bar, which, origin, time, duration, rate, mark_in, mark_out);
+        return;
+    }
     // ---- controls row: timecode | zoom | res | wrench | duration
     let dur_tc = format_time(mark_out.map(|o| o + rate.frame_duration()).unwrap_or(duration) - range_start, rate, drop_frame, TimeDisplay::Timecode, 48000);
     let (bar, zoom_bar) = controls_row(app, ui, rect, which, time, rate, drop_frame, origin, &dur_tc);

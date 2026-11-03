@@ -46,6 +46,10 @@ mod overlay;
 mod properties;
 mod text_edit;
 
+pub(crate) fn cancel_touch(ctx: &egui::Context) {
+    ctx.data_mut(|data| data.remove::<handles::DragState>(egui::Id::unique("gfx-overlay").with("drag")));
+}
+
 pub use canvas::visible_layers;
 pub(crate) use canvas::{frame_to_screen, unscale};
 use canvas::{screen_scale, sp};

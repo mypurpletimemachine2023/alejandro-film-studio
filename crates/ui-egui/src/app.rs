@@ -32,6 +32,8 @@ impl FilmcraftApp {
         let ime_document_epoch = session.document_epoch;
         let ime_active_sequence = session.state.active_sequence;
         Self {
+            mobile: crate::mobile::Runtime::default(),
+            mobile_checkpoint: None,
             session,
             ui: UiState { language, ..UiState::default() },
             tokens: Tokens::for_kind(ThemeKind::Dark),
@@ -430,6 +432,7 @@ impl eframe::App for FilmcraftApp {
     /// and agent input, and offer at most one queued synthetic step. A step already preserved by
     /// hidden logic callbacks is not appended twice; a real UI pass clears it.
     fn raw_input_hook(&mut self, ctx: &egui::Context, raw_input: &mut egui::RawInput) {
+        self.mobile_raw_input(ctx, raw_input);
         self.native_window_focused = Some(raw_input.focused);
         capture::note_raw_geometry(self, ctx, raw_input);
         #[cfg(target_os = "macos")]

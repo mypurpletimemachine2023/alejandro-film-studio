@@ -51,6 +51,13 @@ const ROTATE_REACH: f32 = 24.0;
 const MERGE: &str = "programTransform";
 /// The same for a Corner Pin corner.
 const PIN_MERGE: &str = "programCornerPin";
+
+pub(crate) fn cancel_touch(ctx: &egui::Context) {
+    ctx.data_mut(|data| {
+        data.remove::<Drag>(egui::Id::unique("program-transform").with("drag"));
+        data.remove::<PinDrag>(egui::Id::unique("program-corner-pin").with("drag"));
+    });
+}
 /// Corner Pin's corners, in the order of the box's (TL, TR, BR, BL).
 const PIN_CORNERS: [&str; 4] = ["upper_left", "upper_right", "lower_right", "lower_left"];
 /// How far inside the monitor's clip (which reaches 12 points past the picture area) a handle

@@ -54,6 +54,9 @@ pub(super) fn draw_top(app: &mut FilmcraftApp, ui: &mut egui::Ui, rect: Rect, se
         (Icon::Wrench, "settings", false, false, tl!("Timeline Display Settings")),
     ];
     for (icon, key, on, toggle, tip) in toggles {
+        if app.mobile.policy.compact {
+            break;
+        }
         let r = Rect::from_min_size(pos2(x, y), vec2(28.0, 28.0));
         let resp = ui.interact(r, egui::Id::unique(("tl-toggle", key)), Sense::click()).on_hover_text(tip);
         app.auto.add(&format!("timeline.toggle.{key}"), r, tip);

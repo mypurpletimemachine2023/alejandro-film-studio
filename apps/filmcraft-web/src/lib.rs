@@ -44,6 +44,36 @@ thread_local! {
     static ACTIONS: RefCell<Vec<Action>> = const { RefCell::new(Vec::new()) };
     static CTX: RefCell<Option<egui::Context>> = const { RefCell::new(None) };
     static INFO: RefCell<serde_json::Value> = const { RefCell::new(serde_json::Value::Null) };
+    static ACADEMY_LAYOUT: RefCell<String> = const { RefCell::new(String::new()) };
+    static LAYOUT_PREFERENCE: RefCell<Option<String>> = const { RefCell::new(None) };
+}
+
+/// Read-only applied presentation information; contains no document or project data.
+#[wasm_bindgen(js_name = academyLayoutState)]
+pub fn academy_layout_state() -> String {
+    ACADEMY_LAYOUT.with(|state| state.borrow().clone())
+}
+
+fn sync_layout_preference(app: &mut FilmcraftApp) {
+    const KEY: &str = "aca:film:mobile-layout:v1";
+    let storage = web_sys::window().and_then(|window| window.local_storage().ok().flatten());
+    LAYOUT_PREFERENCE.with(|previous| {
+        let mut previous = previous.borrow_mut();
+        if previous.is_none()
+            && let Some(text) = storage.as_ref().and_then(|storage| storage.get_item(KEY).ok().flatten())
+        {
+            app.mobile.load_preference(&text);
+        }
+        let text = app.mobile.preference();
+        if previous.as_ref() != Some(&text) {
+            if let Some(storage) = storage.as_ref()
+                && storage.set_item(KEY, &text).is_err()
+            {
+                app.ui.status = "Layout changed for this session; browser preference storage is unavailable.".into();
+            }
+            *previous = Some(text);
+        }
+    });
 }
 
 /// Run `f` on the UI thread at the next frame.
@@ -97,6 +127,7 @@ impl eframe::App for WebApp {
 
     /// Hidden logic pass: host actions, app logic, API replies, jobs, audio, autosave, then IME reset; it does not draw UI.
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        sync_layout_preference(&mut self.app);
         crate::academy::attach(ctx);
         if let Some(light) = crate::academy::take() {
             // The low-level visual setter alone is overwritten by preference synchronization.
@@ -126,6 +157,7 @@ impl eframe::App for WebApp {
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.app.ui(ui, frame);
+        ACADEMY_LAYOUT.with(|state| *state.borrow_mut() = self.app.mobile.describe().to_string());
     }
 }
 

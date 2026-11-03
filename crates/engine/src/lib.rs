@@ -20,6 +20,7 @@ pub mod demo;
 pub mod doc_path;
 pub mod essential_sound;
 pub mod export_tools;
+pub mod gesture;
 pub mod graphic_templates;
 pub mod graphics;
 pub mod interchange;

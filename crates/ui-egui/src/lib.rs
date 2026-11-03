@@ -60,6 +60,10 @@ pub mod icons;
 mod ime_reset;
 pub mod links;
 pub mod menus;
+pub mod mobile;
+mod mobile_native;
+pub mod mobile_policy;
+mod mobile_touch;
 pub mod native_dialogs;
 pub mod panels;
 pub mod perf;
@@ -191,6 +195,8 @@ pub enum ControlNotice {
 }
 
 pub struct FilmcraftApp {
+    pub mobile: mobile::Runtime,
+    mobile_checkpoint: Option<filmcraft_engine::gesture::Checkpoint>,
     pub session: Session,
     pub ui: UiState,
     pub tokens: Tokens,
