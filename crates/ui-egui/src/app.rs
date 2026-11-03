@@ -520,6 +520,7 @@ impl eframe::App for FilmcraftApp {
         }
         self.ui_inner(ui, frame);
         self.finish_ime_reset_ui(&ctx);
+        self.mobile_finish_input(&ctx);
     }
 }
 

@@ -5,6 +5,11 @@ use std::sync::Arc;
 use crate::{EditorState, History, Session};
 use filmcraft_project::Project;
 
+/// Async imports/opens keep their order and stay queued until the gesture's final UI pass.
+pub fn drain_pending<T>(pending: &mut Vec<T>, input_owned: bool) -> Vec<T> {
+    if input_owned { Vec::new() } else { std::mem::take(pending) }
+}
+
 pub struct Checkpoint {
     project: Arc<Project>,
     history: History,
@@ -81,5 +86,32 @@ mod tests {
         let replacement = s.project.clone();
         assert!(!checkpoint.cancel(&mut s));
         assert!(Arc::ptr_eq(&replacement, &s.project));
+    }
+
+    #[test]
+    fn queued_import_survives_touch_cancel_and_runs_after_the_boundary() {
+        let mut s = Session::default();
+        let original = s.project.clone();
+        let checkpoint = Checkpoint::capture(&s);
+        s.edit("Touch", |project, _| {
+            project.name = "Uncommitted touch".into();
+            Ok(())
+        })
+        .expect("valid gesture edit");
+        let mut pending = vec!["Imported A", "Imported B"];
+        assert!(drain_pending(&mut pending, true).is_empty());
+        assert!(checkpoint.cancel(&mut s));
+        assert!(Arc::ptr_eq(&original, &s.project));
+        assert!(drain_pending(&mut pending, true).is_empty());
+        assert_eq!(pending, ["Imported A", "Imported B"]);
+        for name in drain_pending(&mut pending, false) {
+            s.edit("Async import", |project, _| {
+                project.name = name.into();
+                Ok(())
+            })
+            .expect("queued import applies");
+        }
+        assert_eq!(s.project.name, "Imported B");
+        assert!(pending.is_empty());
     }
 }

@@ -42,6 +42,7 @@ pub struct Runtime {
     pub touch: TouchRouter,
     pub buttons: Vec<(String, Rect)>,
     pub context: Option<(u64, Option<u64>)>,
+    pub boundary_pending: bool,
 }
 
 impl Default for Runtime {
@@ -57,11 +58,16 @@ impl Default for Runtime {
             touch: TouchRouter::default(),
             buttons: Vec::new(),
             context: None,
+            boundary_pending: false,
         }
     }
 }
 
 impl Runtime {
+    pub fn owns_input(&self) -> bool {
+        self.touch.active() || self.boundary_pending
+    }
+
     pub fn load_preference(&mut self, text: &str) {
         if text.len() > 256 {
             return;
@@ -89,6 +95,8 @@ impl Runtime {
             "viewport":rect(self.viewport),
             "workspace":rect(self.bounds),
             "touchBlocked":self.touch.ownership.blocked,
+            "inputOwned":self.owns_input(),
+            "boundaryPending":self.boundary_pending,
             "buttons":self.buttons.iter().map(|(id,r)| json!({"id":id,"rect":rect(*r)})).collect::<Vec<_>>()
         })
     }
@@ -99,7 +107,7 @@ impl NativeApp {
         self.mobile_sync_context();
         let rect = ui.max_rect();
         self.mobile.viewport = rect;
-        let gesture = ui.input(|i| i.pointer.any_down()) || self.mobile.touch.active();
+        let gesture = ui.input(|i| i.pointer.any_down()) || self.mobile.owns_input();
         self.mobile.policy.update(rect.width(), rect.height(), gesture);
         if !self.mobile.policy.compact {
             self.mobile.buttons.clear();

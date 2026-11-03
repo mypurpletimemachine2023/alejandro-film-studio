@@ -137,7 +137,8 @@ impl eframe::App for WebApp {
                 if light { filmcraft_ui_egui::theme::ThemeKind::Light } else { filmcraft_ui_egui::theme::ThemeKind::Dark },
             );
         }
-        let actions = ACTIONS.with(|a| std::mem::take(&mut *a.borrow_mut()));
+        let owned = self.app.mobile.owns_input();
+        let actions = ACTIONS.with(|a| filmcraft_engine::gesture::drain_pending(&mut *a.borrow_mut(), owned));
         for f in actions {
             f(self, ctx);
         }
@@ -151,13 +152,17 @@ impl eframe::App for WebApp {
         if let Some(a) = &self.audio {
             a.pump();
         }
-        self.autosave.tick(&self.app.session, ctx);
+        if !self.app.mobile.owns_input() {
+            self.autosave.tick(&self.app.session, ctx);
+        }
         self.app.finish_ime_reset_logic(ctx);
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.app.ui(ui, frame);
-        ACADEMY_LAYOUT.with(|state| *state.borrow_mut() = self.app.mobile.describe().to_string());
+        let mut layout = self.app.mobile.describe();
+        layout["pendingActions"] = json!(ACTIONS.with(|actions| actions.borrow().len()));
+        ACADEMY_LAYOUT.with(|state| *state.borrow_mut() = layout.to_string());
     }
 }
 
