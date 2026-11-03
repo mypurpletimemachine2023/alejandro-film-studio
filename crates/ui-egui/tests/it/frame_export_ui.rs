@@ -14,6 +14,9 @@ fn step(h: &mut Harness<'static, FilmcraftApp>) {
     h.step();
 }
 fn harness() -> Harness<'static, FilmcraftApp> {
+    harness_size(egui::vec2(1600.0, 980.0))
+}
+fn harness_size(size: egui::Vec2) -> Harness<'static, FilmcraftApp> {
     let mut s = Session::default();
     s.execute("file.newSequence", json!({"name":"Program clip","width":128,"height":72,"fps":24})).unwrap();
     let item = filmcraft_engine::demo::add_generator(
@@ -31,7 +34,7 @@ fn harness() -> Harness<'static, FilmcraftApp> {
         None,
     );
     s.execute("source.open", json!({"item":item.0})).unwrap();
-    let mut h = Harness::builder().with_size(egui::vec2(1600.0, 980.0)).build_eframe(move |_cc| FilmcraftApp::new(s));
+    let mut h = Harness::builder().with_size(size).build_eframe(move |_cc| FilmcraftApp::new(s));
     for _ in 0..3 {
         step(&mut h);
     }
@@ -62,6 +65,29 @@ fn click(h: &mut Harness<'static, FilmcraftApp>, id: &str) {
 }
 fn has(h: &Harness<'static, FilmcraftApp>, id: &str) -> bool {
     h.state().auto.elements.iter().any(|e| e.id == id)
+}
+
+#[test]
+fn academy_mobile_frame_export_pins_touch_confirmations_inside_phone_and_landscape() {
+    for size in [egui::vec2(390.0, 792.0), egui::vec2(844.0, 338.0)] {
+        let mut h = harness_size(size);
+        let project = h.state().session.project.clone();
+        let dirty = h.state().session.is_dirty();
+        let ctx = h.ctx.clone();
+        menus::invoke(h.state_mut(), &ctx, "file.exportFrame", json!({"monitor":"program"})).unwrap();
+        for _ in 0..4 {
+            step(&mut h);
+        }
+        for id in ["exportFrame.cancel", "exportFrame.export"] {
+            let [x, y, w, height] = h.state().auto.elements.iter().find(|e| e.id == id).expect("visible confirmation").rect;
+            assert!(w >= 44.0 && height >= 44.0, "{id}: {w}x{height}");
+            assert!(x >= 0.0 && y >= 0.0 && x + w <= size.x && y + height <= size.y, "{id} outside {size:?}: {x},{y},{w},{height}");
+        }
+        click(&mut h, "exportFrame.cancel");
+        assert!(!has(&h, "exportFrame.export"));
+        assert!(Arc::ptr_eq(&project, &h.state().session.project));
+        assert_eq!(h.state().session.is_dirty(), dirty);
+    }
 }
 
 #[test]

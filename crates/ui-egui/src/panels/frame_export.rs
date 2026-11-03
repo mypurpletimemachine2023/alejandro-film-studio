@@ -81,6 +81,7 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
     let mut movement = egui::Vec2::ZERO;
     // Only the custom white header moves the window; form controls keep their own gestures.
     let window_id = egui::Id::unique("frame-export-window");
+    let compact = app.mobile.policy.compact;
     let mut window = egui::Window::new("Export Frame")
         .id(window_id)
         .title_bar(false)
@@ -90,10 +91,99 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
         .frame(frame)
         .pivot(egui::Align2::CENTER_CENTER)
         .default_pos(ctx.content_rect().center());
-    if let Some(position) = position {
+    if compact {
+        window = window.current_pos(ctx.content_rect().center());
+    } else if let Some(position) = position {
         window = window.current_pos(position);
     }
     let shown = window.show(ctx, |ui| {
+        if compact {
+            // A phone must not inherit the desktop form's 440px minimum or a dragged
+            // desktop position. Keep confirmation outside the scrolling settings body.
+            ui.set_width((ctx.content_rect().width() - 24.0).clamp(180.0, 440.0));
+            ui.spacing_mut().interact_size = egui::vec2(44.0, 44.0);
+            egui::Frame::NONE.inner_margin(12).show(ui, |ui| {
+                ui.heading("Export Frame");
+                egui::ScrollArea::vertical().max_height((ctx.content_rect().height() - 160.0).max(44.0)).show(ui, |ui| {
+                    ui.label("Name");
+                    let r = crate::widgets::accessible_name(ui.add(egui::TextEdit::singleline(&mut d.name).desired_width(ui.available_width())), "Name");
+                    elems.push(("exportFrame.name".into(), r.rect, d.name.clone()));
+                    ui.label("Format");
+                    let combo = craft_ui::ComboBox::from_id_salt("frame-export-format")
+                        .width((ui.available_width() - 8.0).max(120.0))
+                        .selected_text(d.format.label())
+                        .show_ui(ui, |ui| {
+                            for format in StillFormat::ALL {
+                                let r = ui.selectable_value(&mut d.format, format, format.label());
+                                elems.push((format!("exportFrame.format.{}", format.extension()), r.rect, format.label().into()));
+                            }
+                            ui.min_rect()
+                        });
+                    if let Some(rect) = combo.inner {
+                        popup_rects.push(rect);
+                    }
+                    elems.push(("exportFrame.format".into(), combo.response.rect, d.format.label().into()));
+                    if !d.format.supports_16() {
+                        d.depth = 8;
+                    }
+                    ui.label("Depth");
+                    let combo = craft_ui::ComboBox::from_id_salt("frame-export-depth")
+                        .width((ui.available_width() - 8.0).max(120.0))
+                        .selected_text(format!("{} Bit", d.depth))
+                        .show_ui(ui, |ui| {
+                            for bits in [8, 16] {
+                                let r = ui.add_enabled(bits == 8 || d.format.supports_16(), egui::Button::selectable(d.depth == bits, format!("{bits} Bit")));
+                                if r.clicked() {
+                                    d.depth = bits;
+                                }
+                            }
+                            ui.min_rect()
+                        });
+                    if let Some(rect) = combo.inner {
+                        popup_rects.push(rect);
+                    }
+                    elems.push(("exportFrame.depth".into(), combo.response.rect, format!("{} Bit", d.depth)));
+                    ui.label("Path");
+                    let r = crate::widgets::accessible_name(ui.add(egui::TextEdit::singleline(&mut d.folder).desired_width(ui.available_width())), "Path");
+                    elems.push(("exportFrame.path".into(), r.rect, d.folder.clone()));
+                    let r = ui.checkbox(&mut d.import, "Import into project");
+                    elems.push(("exportFrame.import".into(), r.rect, d.import.to_string()));
+                    if let Some(error) = &d.error {
+                        ui.colored_label(egui::Color32::from_rgb(0xe0, 0x60, 0x60), error);
+                    }
+                    ui.label(format!("{} — {} × {}", if d.target.source { "Source" } else { "Program" }, d.target.width, d.target.height));
+                    ui.label(format!("Frame time: {}", d.timecode));
+                    if let Some(path) = &d.replace {
+                        ui.label(format!("This file already exists: {path}"));
+                    }
+                });
+                ui.separator();
+                ui.horizontal(|ui| {
+                    let r = ui.add(egui::Button::new(if d.replace.is_some() { "Keep existing" } else { "Cancel" }).min_size(egui::vec2(120.0, 44.0)));
+                    if r.clicked() {
+                        if d.replace.is_some() {
+                            d.replace = None;
+                        } else {
+                            close = true;
+                        }
+                    }
+                    elems.push(("exportFrame.cancel".into(), r.rect, "Cancel".into()));
+                    let r = ui.add_enabled(
+                        !d.name.trim().is_empty() && !d.folder.trim().is_empty(),
+                        egui::Button::new(if d.replace.is_some() { "Replace" } else { "Export" }).min_size(egui::vec2(120.0, 44.0)).fill(app.tokens.accent),
+                    );
+                    if r.clicked() {
+                        if d.replace.is_some() {
+                            replace = true;
+                        } else {
+                            apply = true;
+                        }
+                    }
+                    elems.push(("exportFrame.export".into(), r.rect, "Export".into()));
+                });
+            });
+            return;
+        }
         ui.set_width(440.0);
         let (bar, _) = ui.allocate_exact_size(egui::vec2(440.0, 30.0), egui::Sense::hover());
         ui.painter().rect_filled(bar, egui::CornerRadius { nw: 6, ne: 6, sw: 0, se: 0 }, egui::Color32::WHITE);
@@ -222,6 +312,9 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
         ctx.request_repaint();
     }
     for (id, rect, label) in elems {
+        if compact {
+            app.mobile.buttons.push((id.clone(), rect));
+        }
         app.auto.add(&id, rect, &label);
     }
     close |= crate::widgets::escape_closes(ctx);
