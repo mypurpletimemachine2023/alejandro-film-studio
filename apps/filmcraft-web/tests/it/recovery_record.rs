@@ -7,13 +7,15 @@ fn project(name: &str) -> Vec<u8> {
 
 #[test]
 fn saved_and_dirty_checkpoints_both_restore_exact_native_data() {
-    for dirty in [false, true] {
-        let native = project("Academy original");
-        let encoded = record::encode(&native, dirty, 42.0).unwrap();
-        let loaded = record::decode(&encoded).unwrap();
-        assert_eq!(loaded.name, "Academy original");
-        assert_eq!(loaded.dirty, dirty);
-        assert_eq!(serde_json::from_slice::<serde_json::Value>(&loaded.native).unwrap(), serde_json::from_slice::<serde_json::Value>(&native).unwrap());
+    for name in ["Academy original", "FilmCraft – Demo Project", "Owner's Cut"] {
+        for dirty in [false, true] {
+            let native = project(name);
+            let encoded = record::encode(&native, dirty, 42.0).unwrap();
+            let loaded = record::decode(&encoded).unwrap();
+            assert_eq!(loaded.name, name);
+            assert_eq!(loaded.dirty, dirty);
+            assert_eq!(serde_json::from_slice::<serde_json::Value>(&loaded.native).unwrap(), serde_json::from_slice::<serde_json::Value>(&native).unwrap());
+        }
     }
 }
 
