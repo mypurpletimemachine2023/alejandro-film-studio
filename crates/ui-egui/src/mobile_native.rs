@@ -1,7 +1,7 @@
 //! Video Lab's compact adapter. Desktop docking and document view settings remain untouched.
 
 use crate::dock::PanelKind;
-use crate::mobile::{PREFERENCE_FILE, Pane};
+use crate::mobile::Pane;
 use crate::state::Tool;
 use crate::{FilmcraftApp, menus, panels};
 use egui::{Rect, UiBuilder, vec2};
@@ -11,7 +11,7 @@ impl FilmcraftApp {
     pub(crate) fn mobile_store_layout(&mut self) {
         // Browser persistence is owned by the web host, separately from recovery and projects.
         #[cfg(not(target_arch = "wasm32"))]
-        if let Some(path) = self.session.prefs_path.as_ref().and_then(|path| path.parent()).map(|path| path.join(PREFERENCE_FILE))
+        if let Some(path) = self.session.prefs_path.as_ref().and_then(|path| path.parent()).map(|path| path.join(crate::mobile::PREFERENCE_FILE))
             && let Err(error) = std::fs::write(path, self.mobile.preference())
         {
             self.ui.status = format!("Layout changed for this session; preference could not be saved: {error}");

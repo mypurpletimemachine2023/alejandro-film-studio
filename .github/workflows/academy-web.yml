@@ -76,6 +76,7 @@ jobs:
           cargo test --locked -p filmcraft-web --test it
           cargo test --locked -p filmcraft-engine --lib gesture::tests
           cargo test --locked -p filmcraft-ui-egui --lib academy_host_theme_survives_preference_sync_without_touching_project
+          cargo test --locked -p filmcraft-ui-egui --lib academy_mobile_
       - name: Include licenses and exact source identity
         shell: bash
         run: |
