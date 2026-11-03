@@ -129,8 +129,9 @@ impl NativeApp {
                 ui.selectable_value(&mut self.mobile.policy.choice, choice, choice.name());
             }
         });
-        self.auto.add("mobile.layout", response.response.rect, "Workspace layout");
-        self.mobile.buttons.push(("layout".into(), response.response.rect));
+        let response = crate::widgets::accessible_name(response.response, "Workspace layout");
+        self.auto.add("mobile.layout", response.rect, "Workspace layout");
+        self.mobile.buttons.push(("layout".into(), response.rect));
         if self.mobile.policy.choice != before {
             self.mobile_store_layout();
             ui.ctx().request_repaint();
@@ -221,5 +222,27 @@ impl NativeApp {
         } else {
             self.mobile_panel(ui, self.mobile.pane, body);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use egui_kittest::kittest::{NodeT, Queryable};
+
+    #[test]
+    fn academy_mobile_layout_choice_is_named_without_touching_project() {
+        let mut app = NativeApp::new(filmcraft_engine::Session::default());
+        let project = app.session.project.clone();
+        let dirty = app.session.is_dirty();
+        {
+            // Keep kittest's real accessibility guard enabled. Drawing the actual chooser
+            // used to fail before it could even be located by its accessible name.
+            let mut harness = egui_kittest::Harness::new_ui(|ui| app.mobile_layout_choice(ui));
+            harness.run();
+            assert_eq!(harness.get_by_label("Workspace layout").accesskit_node().role(), egui::accesskit::Role::ComboBox);
+        }
+        assert!(std::sync::Arc::ptr_eq(&project, &app.session.project));
+        assert_eq!(app.session.is_dirty(), dirty);
     }
 }

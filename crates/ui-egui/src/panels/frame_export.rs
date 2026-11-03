@@ -122,7 +122,8 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
                     if let Some(rect) = combo.inner {
                         popup_rects.push(rect);
                     }
-                    elems.push(("exportFrame.format".into(), combo.response.rect, d.format.label().into()));
+                    let response = crate::widgets::accessible_name(combo.response, "Format");
+                    elems.push(("exportFrame.format".into(), response.rect, d.format.label().into()));
                     if !d.format.supports_16() {
                         d.depth = 8;
                     }
@@ -142,7 +143,8 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
                     if let Some(rect) = combo.inner {
                         popup_rects.push(rect);
                     }
-                    elems.push(("exportFrame.depth".into(), combo.response.rect, format!("{} Bit", d.depth)));
+                    let response = crate::widgets::accessible_name(combo.response, "Depth");
+                    elems.push(("exportFrame.depth".into(), response.rect, format!("{} Bit", d.depth)));
                     ui.label("Path");
                     let r = crate::widgets::accessible_name(ui.add(egui::TextEdit::singleline(&mut d.folder).desired_width(ui.available_width())), "Path");
                     elems.push(("exportFrame.path".into(), r.rect, d.folder.clone()));
@@ -312,7 +314,7 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
         ctx.request_repaint();
     }
     for (id, rect, label) in elems {
-        if compact {
+        if compact && matches!(id.as_str(), "exportFrame.cancel" | "exportFrame.export") {
             app.mobile.buttons.push((id.clone(), rect));
         }
         app.auto.add(&id, rect, &label);
