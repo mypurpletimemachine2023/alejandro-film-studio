@@ -124,7 +124,7 @@ impl NativeApp {
     fn mobile_layout_choice(&mut self, ui: &mut egui::Ui) {
         let before = self.mobile.policy.choice;
         let response = egui::ComboBox::from_id_salt("aca-mobile-layout").selected_text(self.mobile.policy.choice.name()).width(78.0).show_ui(ui, |ui| {
-            ui.spacing_mut().interact_size.y = 44.0;
+            ui.spacing_mut().interact_size = vec2(44.0, 44.0);
             for choice in [LayoutChoice::Auto, LayoutChoice::Compact, LayoutChoice::Desktop] {
                 ui.selectable_value(&mut self.mobile.policy.choice, choice, choice.name());
             }
@@ -142,7 +142,7 @@ impl NativeApp {
             ctx,
             |ui| {
                 egui::Frame::popup(ui.style()).show(ui, |ui| {
-                    ui.spacing_mut().interact_size.y = 44.0;
+                    ui.spacing_mut().interact_size = vec2(44.0, 44.0);
                     self.mobile_layout_choice(ui);
                 });
             },
@@ -155,7 +155,7 @@ impl NativeApp {
         let mut bar = ui.new_child(UiBuilder::new().max_rect(header).layout(egui::Layout::top_down(Align::Min)).id_salt("aca-mobile-toolbar"));
         bar.set_clip_rect(header.intersect(ui.clip_rect()));
         bar.spacing_mut().item_spacing = vec2(3.0, 0.0);
-        bar.spacing_mut().interact_size.y = 44.0;
+        bar.spacing_mut().interact_size = vec2(44.0, 44.0);
         bar.horizontal(|ui| {
             for (id, label, command) in
                 [("open", "Open", "file.open"), ("save", "Save", "file.save"), ("undo", "Undo", "edit.undo"), ("redo", "Redo", "edit.redo")]
@@ -165,7 +165,7 @@ impl NativeApp {
                 }
             }
             let menu = ui.menu_button("More", |ui| {
-                ui.spacing_mut().interact_size.y = 44.0;
+                ui.spacing_mut().interact_size = vec2(44.0, 44.0);
                 for (label, command) in [("New", "@new"), ("Import media", "file.import"), ("Export frame", "@export")] {
                     if ui.add(egui::Button::new(label).min_size(vec2(160.0, 44.0))).clicked() {
                         self.mobile_command(ui.ctx(), command);

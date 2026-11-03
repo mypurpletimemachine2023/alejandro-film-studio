@@ -79,7 +79,7 @@ impl FilmcraftApp {
     pub(crate) fn mobile_panel(&mut self, ui: &mut egui::Ui, pane: Pane, rect: Rect) {
         let mut child = ui.new_child(UiBuilder::new().max_rect(rect).id_salt(("mobile-panel", pane.name())));
         child.set_clip_rect(rect.intersect(ui.clip_rect()));
-        child.spacing_mut().interact_size.y = 44.0;
+        child.spacing_mut().interact_size = vec2(44.0, 44.0);
         if self.mobile.touch.ownership.blocked {
             child.disable();
         }
