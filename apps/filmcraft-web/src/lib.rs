@@ -97,6 +97,10 @@ impl eframe::App for WebApp {
 
     /// Hidden logic pass: host actions, app logic, API replies, jobs, audio, autosave, then IME reset; it does not draw UI.
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        crate::academy::attach(ctx);
+        if let Some(light) = crate::academy::take() {
+            self.app.set_theme(ctx, if light { filmcraft_ui_egui::theme::ThemeKind::Light } else { filmcraft_ui_egui::theme::ThemeKind::Dark });
+        }
         let actions = ACTIONS.with(|a| std::mem::take(&mut *a.borrow_mut()));
         for f in actions {
             f(self, ctx);
@@ -243,3 +247,6 @@ pub async fn start(canvas_id: String) -> Result<(), JsValue> {
     }
     Ok(())
 }
+
+#[cfg(target_arch = "wasm32")]
+mod academy;

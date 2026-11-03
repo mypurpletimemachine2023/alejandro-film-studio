@@ -36,8 +36,8 @@ pub fn show(app: &mut FilmcraftApp, ctx: &egui::Context) {
     let mut open = true;
     match d {
         Dialog::About => {
-            egui::Window::new(tl!("About ACA Film Studio"))
-                .id(egui::Id::unique("About ACA Film Studio"))
+            egui::Window::new(tl!("About ACA Video Lab"))
+                .id(egui::Id::unique("About ACA Video Lab"))
                 .open(&mut open)
                 .collapsible(false)
                 .resizable(false)
@@ -467,10 +467,10 @@ fn about_tab(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
     let (r, _) = ui.allocate_exact_size(egui::vec2(ui.available_width(), 30.0), egui::Sense::hover());
     crate::brand::paint_wordmark(ui, egui::pos2(r.min.x, r.center().y), 20.0, app.ui.dark);
     ui.add_space(6.0);
-    ui.heading("ACA Film Studio");
+    ui.heading("ACA Video Lab");
     ui.label(tlf!("Version {version}", version = env!("CARGO_PKG_VERSION")));
     ui.label("ALEJANDRO Creative Academy — independent edition");
-    ui.label("Based on FilmCraft by the ArtCraft team and contributors. Non-linear editing in pure Rust.");
+    ui.label("Open-source licenses and contributors are available in Credits.");
     ui.hyperlink_to("Alejandro Creative Academy", "https://alejandrocreativeacademy.com");
     ui.add_space(10.0);
     let mut link = |ui: &mut egui::Ui, id: &str, icon: Icon, label: &str, url: &str, primary: bool| {
@@ -500,12 +500,12 @@ fn about_tab(app: &mut FilmcraftApp, ui: &mut egui::Ui) {
             links::open(app, ui.ctx(), url);
         }
     };
-    link(ui, "discord", Icon::Chat, tl!("Join the ArtCraft Discord"), links::DISCORD, true);
+    link(ui, "discord", Icon::Chat, tl!("App tutorial"), links::DISCORD, true);
     ui.add_space(6.0);
-    link(ui, "website", Icon::Globe, "getartcraft.com", links::WEBSITE, false);
-    link(ui, "appPage", Icon::Globe, tl!("FilmCraft on getartcraft.com"), links::APP_PAGE, false);
-    link(ui, "github", Icon::Code, tl!("Source code on GitHub"), links::GITHUB, false);
-    link(ui, "reportIssue", Icon::Code, tl!("Report an issue"), links::ISSUES, false);
+    link(ui, "website", Icon::Globe, "Academy apps", links::WEBSITE, false);
+    link(ui, "appPage", Icon::Globe, tl!("ACA Video Lab"), links::APP_PAGE, false);
+    link(ui, "github", Icon::Code, tl!("Credits and licenses"), links::GITHUB, false);
+    link(ui, "reportIssue", Icon::Code, tl!("Credits and licenses"), links::ISSUES, false);
     ui.add_space(10.0);
     ui.label(egui::RichText::new(tl!("MIT OR Apache-2.0. Fonts: Inter, Noto Serif and JetBrains Mono (SIL OFL 1.1).")).small().color(t.text_dim));
 }

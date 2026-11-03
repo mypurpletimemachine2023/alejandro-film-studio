@@ -209,13 +209,13 @@ impl FilmcraftApp {
 }
 
 impl FilmcraftApp {
-    /// The "ACA Film Studio hit an error" window after a caught UI panic. Automation ids:
+    /// The "ACA Video Lab hit an error" window after a caught UI panic. Automation ids:
     /// `error.dismiss`, `error.save`.
     pub(super) fn error_window(&mut self, ctx: &egui::Context) {
         let Some(msg) = self.ui_error.clone() else { return };
         let mut close = false;
-        egui::Window::new(tl!("ACA Film Studio hit an error"))
-            .id(egui::Id::unique("ACA Film Studio hit an error"))
+        egui::Window::new(tl!("ACA Video Lab hit an error"))
+            .id(egui::Id::unique("ACA Video Lab hit an error"))
             .collapsible(false)
             .resizable(false)
             .pivot(egui::Align2::CENTER_CENTER)

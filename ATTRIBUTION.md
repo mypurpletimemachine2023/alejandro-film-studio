@@ -182,3 +182,5 @@ SHA-256 (`crates/speech/src/models.rs`, `docs/transcripts.md`).
 ACA derivative: the ArtCraft trademark artwork under docs/brand has been excluded. ACA marks are original text/geometry drawn in code; copyright and other dependency notices are retained.
 
 | `apps/filmcraft-web/web/index.html` inline ACA favicon | ACA fork contributors | Original procedural SVG geometry and system type | MIT OR Apache-2.0 |
+
+| `apps/filmcraft-web/web/academy-bridge.js` | Academy appearance and tutorial bridge | Alejandro Creative Academy | Original source | MIT OR Apache-2.0 |

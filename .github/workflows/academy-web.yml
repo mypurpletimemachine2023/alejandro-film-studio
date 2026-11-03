@@ -39,6 +39,9 @@ jobs:
       CARGO_BUILD_JOBS: 2
       CARGO_INCREMENTAL: 0
       CARGO_PROFILE_RELEASE_DEBUG: 0
+      CARGO_PROFILE_RELEASE_LTO: 'false'
+      CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 16
+      CARGO_PROFILE_RELEASE_OPT_LEVEL: s
       CARGO_TARGET_DIR: ${{ github.workspace }}/.aca-target
       WASM_BINDGEN_BIN: wasm-bindgen
     steps:
