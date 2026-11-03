@@ -64,6 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node --test test-academy-bootstrap.mjs
           cargo xtask web
           mkdir -p dist/web
           cp -a "$CARGO_TARGET_DIR/web/dist/." dist/web/

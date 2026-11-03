@@ -76,8 +76,8 @@
     try {
       const bindings = await import("./filmcraft_web.js" + v);
       const { default: init, start } = bindings;
-      window.wasmBindings = bindings;
       await init({ module_or_path: new URL("filmcraft_web_bg.wasm" + v, location.href) });
+      window.wasmBindings = bindings;
       window.filmcraftLoad.wasmMs = performance.now() - t0;
       await start("filmcraft_canvas");
       window.filmcraftLoad.readyMs = performance.now() - t0;
